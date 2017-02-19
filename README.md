@@ -1,1 +1,1 @@
-# GalileoAgent.NET <sub><sup>(for .NET ASP core and MVC4/5)</sub></sub>
+# GalileoAgent.NET <sub><sup>(for ASP.NET Core and ASP.NET MVC4/5)</sub></sub>
