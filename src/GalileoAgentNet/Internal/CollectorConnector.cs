@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
@@ -64,6 +65,8 @@ namespace GalileoAgentNet.Internal
                     JsonConvert.SerializeObject(alf, Formatting.Indented, jsonSerializerSets), 
                     Encoding.UTF8, 
                     "application/json");
+
+                content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
 
                 return await responseHandler.ProcessResponse(await httpClient.PostAsync(uri, content));
             }
