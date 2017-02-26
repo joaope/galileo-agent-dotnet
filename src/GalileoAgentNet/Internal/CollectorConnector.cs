@@ -87,7 +87,7 @@ namespace GalileoAgentNet.Internal
             switch (requestCompression)
             {
                 case CollectorRequestCompression.PlainText:
-                    content = new StringContent(jsonRequestBody, Encoding.Default);
+                    content = new StringContent(jsonRequestBody, Encoding.UTF8);
                     break;
 
                 case CollectorRequestCompression.GZip:
