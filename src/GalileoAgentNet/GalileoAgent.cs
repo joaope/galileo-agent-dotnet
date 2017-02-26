@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using GalileoAgentNet.ApiLogFormat;
@@ -8,7 +9,7 @@ using GalileoAgentNet.Internal;
 
 namespace GalileoAgentNet
 {
-    public class GalileoAgent : IDisposable
+    public sealed class GalileoAgent : IDisposable
     {
         private readonly CollectorConnector collectorConnector;
 
@@ -16,11 +17,11 @@ namespace GalileoAgentNet
 
         public string SupportedFormatVersion { get; } = "1.1.0";
 
-        public virtual string AgentName { get; } = "GalileoAgentNet";
+        public string AgentName { get; } = "GalileoAgentNet";
 
-        public virtual string AgentVersion { get; } = typeof(GalileoAgent).GetAssemblyVersion();
+        public string AgentVersion { get; } = typeof(GalileoAgent).GetAssemblyVersion();
 
-        public virtual IEntriesQueue Queue { get; }
+        public IEntriesQueue Queue { get; }
 
         public AgentConfiguration Configuration { get; }
 
@@ -39,7 +40,16 @@ namespace GalileoAgentNet
             Configuration = configuration;
             Queue = queue;
 
-            collectorConnector = new CollectorConnector(Configuration.Host, Configuration.Port);
+            collectorConnector = new CollectorConnector(
+                new HttpClient(), 
+                Configuration.Host, 
+                Configuration.Port,
+                Configuration.GalileoServiceToken,
+                AgentName,
+                AgentVersion,
+                Configuration.Environment,
+                Configuration.RequestCompression);
+
             flushTimer = new Timer(ElapsedFlushTimeout, this, 0, Configuration.FlushTimeout * 1000);
         }
 
@@ -58,11 +68,11 @@ namespace GalileoAgentNet
             flushTimer.Change(0, Configuration.FlushTimeout * 1000);
         }
 
-        public async Task Process(Entry entry)
+        public void Process(Entry entry)
         {
             if (Queue.Size == Configuration.QueueSize)
             {
-                await FlushQueue();
+                FlushQueue();
             }
             
             Queue.Enqueue(entry);
@@ -75,9 +85,17 @@ namespace GalileoAgentNet
                 return;
             }
 
+            FlushQueue();
+        }
+
+        private void FlushQueue()
+        {
             flushTimer.Change(Timeout.Infinite, Timeout.Infinite);
 
-            Task.Run(async () => await FlushQueue())
+            Task.Factory.StartNew(async () =>
+                {
+                    var result = await collectorConnector.Send(Queue.DequeueAll());
+                })
                 .ContinueWith(t =>
                 {
                     flushTimer.Change(0, Configuration.FlushTimeout * 1000);
@@ -85,19 +103,10 @@ namespace GalileoAgentNet
                 .ConfigureAwait(false);
         }
 
-        private async Task FlushQueue()
-        {
-            var result = await collectorConnector.Send(
-                Configuration.GalileoServiceToken, 
-                AgentName, 
-                AgentVersion,
-                Configuration.Environment,
-                Queue.DequeueAll());
-        }
-
         public void Dispose()
         {
             flushTimer?.Dispose();
+            collectorConnector?.Dispose();
         }
     }
 }

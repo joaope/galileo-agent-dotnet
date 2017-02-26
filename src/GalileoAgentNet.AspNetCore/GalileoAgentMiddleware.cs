@@ -17,7 +17,12 @@ namespace GalileoAgentNet.AspNetCore
 
         public GalileoAgentMiddleware(RequestDelegate next)
         {
-            this.next = next ?? throw new ArgumentNullException(nameof(next));
+            if (next == null)
+            {
+                throw new ArgumentNullException(nameof(next));
+            }
+
+            this.next = next;
         }
 
         public async Task Invoke(HttpContext context)
@@ -120,7 +125,7 @@ namespace GalileoAgentNet.AspNetCore
                     endProcessingResponseTicks - startProcessingResponseTicks,
                     endWaitingResponseTicks - startWaitingResponseTicks));
 
-            await GalileoAgentAccessor.AgentInstance.Process(entry);
+            GalileoAgentAccessor.AgentInstance.Process(entry);
         }
     }
 }

@@ -125,7 +125,7 @@ namespace GalileoAgentNet.WebApi
                     context.Response.ContentEncoding.WebName, 
                     responseBody));
 
-            await agentInstance.Process(new Entry(
+            agentInstance.Process(new Entry(
                 DateTime.UtcNow,
                 context.Request.UserHostAddress,
                 context.Server.MachineName,

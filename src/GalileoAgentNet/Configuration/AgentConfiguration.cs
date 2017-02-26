@@ -24,6 +24,8 @@ namespace GalileoAgentNet.Configuration
 
         public string FailLogPath { get; set; } = "/dev/null";
 
+        public CollectorRequestCompression RequestCompression { get; set; }
+
         public AgentConfiguration(string galileoServiceToken)
             : this(galileoServiceToken, "collector.galileo.mashape.com", 443)
         {
