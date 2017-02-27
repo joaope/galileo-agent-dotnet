@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using GalileoAgentNet.ApiLogFormat;
 using GalileoAgentNet.Configuration;
 using GalileoAgentNet.Extensions;
 using GalileoAgentNet.Internal;
+
+[assembly: InternalsVisibleTo("GalileoAgentNet.UnitTests")]
 
 namespace GalileoAgentNet
 {
