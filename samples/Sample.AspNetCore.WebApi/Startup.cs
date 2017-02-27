@@ -34,7 +34,9 @@ namespace Sample.AspNetCore.WebApi
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
-            app.UseGalileo("MY_SERVICE_TOKEN").UseMvc();
+            app
+                .UseGalileo("MY_SERVICE_TOKEN")
+                .UseMvc();
         }
     }
 }
