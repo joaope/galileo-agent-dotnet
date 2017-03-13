@@ -1,4 +1,9 @@
 image: Visual Studio 2017
 
+init:
+  # This gives the login details for the build instance so you can RDP to it.
+  #- ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+  - git config --global core.autocrlf input
+
 before_build:
   - nuget restore
