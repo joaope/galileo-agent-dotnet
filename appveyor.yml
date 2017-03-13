@@ -3,3 +3,8 @@ image: Visual Studio 2017
 before_build:
   - nuget restore
   - dotnet restore
+
+test_script:
+  - dotnet test tests\GalileoAgentNet.UnitTests\GalileoAgentNet.UnitTests.csproj
+  - dotnet test tests\GalileoAgentNet.AspNetCore.UnitTests\GalileoAgentNet.AspNetCore.UnitTests.csproj
+  - dotnet test tests\GalileoAgentNet.WebApi.UnitTests\GalileoAgentNet.WebApi.UnitTests.csproj
